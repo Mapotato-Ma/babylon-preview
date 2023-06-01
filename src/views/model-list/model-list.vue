@@ -2,6 +2,7 @@
   <div class="model-list">
     <div
       class="ml-item"
+      :class="{ 'ml-item-selected': currentViewModelName === model.value }"
       v-for="model in modelListData"
       :key="model.value"
       @click="$emit('model-selected-change', model.value)"
@@ -13,7 +14,9 @@
 
 <script lang="ts" setup>
 import { E_Models } from '@/models';
-
+const { currentViewModelName } = defineProps<{
+  currentViewModelName: E_Models;
+}>();
 defineEmits<{
   (e: 'model-selected-change', modelName: E_Models): void;
 }>();
@@ -36,12 +39,15 @@ const modelListData = Object.entries(E_Models).map((k) => ({ name: k[0], value: 
     display: grid;
     place-content: center;
     color: rgba(255, 255, 255, 0.5);
-    transition: border-radius 233ms, background-color 1.5s;
     border: 2px solid;
     &:hover {
       background-color: rgba(255, 255, 255, 0.5);
       border: 2px dashed;
     }
+  }
+  .ml-item-selected {
+    background-color: #fff;
+    color: rgba(42, 121, 240, 0.827);
   }
 }
 </style>

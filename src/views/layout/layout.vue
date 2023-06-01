@@ -1,7 +1,10 @@
 <template>
   <div class="layout">
     <div class="l-model-list">
-      <ModelListComponent @model-selected-change="modelSelectedChange" />
+      <ModelListComponent
+        :current-view-model-name="currentViewModelName"
+        @model-selected-change="modelSelectedChange"
+      />
     </div>
     <div class="l-model-preview">
       <ModelViewComponent :model-name="currentViewModelName" />
