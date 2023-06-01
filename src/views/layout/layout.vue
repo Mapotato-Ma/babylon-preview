@@ -14,11 +14,9 @@
 
 <script lang="ts" setup>
 import { E_Models } from '@/models';
-import { ModelListComponent, ModelViewComponent } from '..';
 import { ref } from 'vue';
-
-const currentViewModelName = ref<E_Models>(E_Models.海盗堡垒);
-
+import { ModelViewComponent, ModelListComponent } from './components';
+const currentViewModelName = ref<E_Models>();
 const modelSelectedChange = (modelName: E_Models) => {
   currentViewModelName.value !== modelName && (currentViewModelName.value = modelName);
 };

@@ -11,7 +11,7 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { SceneService } from '@/scene';
 import { E_Models } from '@/models';
 const scene = ref<SceneService | undefined>();
-const props = defineProps<{ modelName: E_Models }>();
+const props = defineProps<{ modelName?: E_Models }>();
 
 const outBox = ref<HTMLElement | undefined>();
 const babylonRenderCanvas = ref<HTMLCanvasElement | undefined>();
@@ -41,10 +41,12 @@ const initScene = async () => {
     }
   }
 };
+
 const modelNameWatcher = watch(
   () => props.modelName,
   (newModelName) => {
-    scene.value?.importModel(newModelName);
+    newModelName && scene.value?.importModel(newModelName);
+    console.log('%c |→_→| 场景 |←_←| ', 'font-size: 18px', scene.value);
   }
 );
 

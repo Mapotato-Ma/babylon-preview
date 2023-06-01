@@ -2,26 +2,29 @@
   <div class="model-list">
     <div
       class="ml-item"
-      :class="{ 'ml-item-selected': currentViewModelName === model.value }"
-      v-for="model in modelListData"
-      :key="model.value"
-      @click="$emit('model-selected-change', model.value)"
+      :class="{ 'ml-item-selected': currentViewModelName === value }"
+      v-for="{ value, name } in modelListData"
+      :key="value"
+      @click="$emit('model-selected-change', value)"
     >
-      {{ `模型${model.name}` }}
+      {{ `模型${name}` }}
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { E_Models } from '@/models';
+import { onMounted } from 'vue';
 const { currentViewModelName } = defineProps<{
-  currentViewModelName: E_Models;
+  currentViewModelName?: E_Models;
 }>();
-defineEmits<{
+const emits = defineEmits<{
   (e: 'model-selected-change', modelName: E_Models): void;
 }>();
 
-const modelListData = Object.entries(E_Models).map((k) => ({ name: k[0], value: k[1] }));
+const modelListData = Object.entries(E_Models).map(([name, value]) => ({ name, value }));
+
+onMounted(() => emits('model-selected-change', modelListData[0].value));
 </script>
 
 <style lang="less" scoped>
