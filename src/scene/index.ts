@@ -5,6 +5,7 @@ import { DEFAULT_MODEL_FILE_PATH, I_Scene } from './index.api';
 import { Subject } from 'rxjs';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders';
+import { getBestCameraPosition } from './utils';
 
 /**
  * @description 场景类
@@ -54,6 +55,9 @@ export class SceneService implements I_Scene {
     this.currentViewModelName = modelName;
     // 导入完成
     this.importModel$.next({ complete: true });
+
+    // 移动摄像头到最佳位置
+    getBestCameraPosition(this.scene);
   }
 
   /**
