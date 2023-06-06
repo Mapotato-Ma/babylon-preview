@@ -1,4 +1,4 @@
-import { AbstractMesh, Engine, Scene } from '@babylonjs/core';
+import { Engine, Scene } from '@babylonjs/core';
 import { createDefaultScene, createEngine, createScene } from '@/creator';
 import { E_Models } from '@/models';
 import { DEFAULT_MODEL_FILE_PATH, I_Scene } from './index.api';
@@ -17,7 +17,6 @@ import { getBestCameraPosition } from './utils';
 export class SceneService implements I_Scene {
   engine: Engine;
   scene: Scene;
-  meshGroup: Map<E_Models, AbstractMesh[]> = new Map();
   importModel$: Subject<Partial<{ loaded: number; total: number; complete: boolean }>> = new Subject();
   currentViewModelName: E_Models | null = null;
   constructor(canvas: HTMLCanvasElement, isDefaultScene: boolean) {
@@ -40,17 +39,10 @@ export class SceneService implements I_Scene {
    * @memberof SceneService
    */
   public async importModel(modelName: E_Models) {
-    // 开始导入
-    this.importModel$.next({ complete: false });
-    // 禁用当前模型
-    this.setDisableMeshes();
-    // 判断是否已经导入过，如果导入过直接启用该模型mesh
-    if (this.meshGroup.get(modelName)) {
-      this.setEnableMeshes(modelName);
-    } else {
-      // 加载模型
-      await this.loadModel(modelName);
-    }
+    // 清空场景
+    await this.clearScene();
+    // 加载模型
+    await this.loadModel(modelName);
     // 将当前模型名称改为传入模型名称
     this.currentViewModelName = modelName;
     // 导入完成
@@ -72,41 +64,22 @@ export class SceneService implements I_Scene {
         total: event.total,
       });
     });
-    this.insertMeshes(
-      modelName,
-      this.scene.meshes.filter((mesh) => mesh.isEnabled(false))
-    );
+    // 如果有动画先停止所有动画
+    this.scene.animationGroups.forEach((animation) => animation.pause());
   }
 
   /**
-   * 将模型实例缓存起来，一般在模型加载完毕后调用
-   * @param modelName 模型名字
-   * @param meshes 场景实例
-   */
-  public insertMeshes(modelName: E_Models, meshes: AbstractMesh[]) {
-    meshes.forEach((mesh) => (mesh.metadata = { modelName }));
-    this.meshGroup.set(modelName, meshes);
-  }
-
-  /**
-   * @description 启用模型
-   * @date 01/06/2023
-   * @public
-   * @param {E_Models} modelName
+   * @description 销毁场景中所有mesh及其动画
+   * @date 06/06/2023
    * @memberof SceneService
    */
-  public setEnableMeshes(modelName: E_Models) {
-    modelName && this.meshGroup.get(modelName)?.forEach((mesh) => mesh.setEnabled(true));
-  }
-
-  /**
-   * @description 禁用模型
-   * @date 01/06/2023
-   * @public
-   * @param {(E_Models | null)} [modelName=this.currentViewModelName]
-   * @memberof SceneService
-   */
-  public setDisableMeshes(modelName: E_Models | null = this.currentViewModelName) {
-    modelName && this.meshGroup.get(modelName)?.forEach((mesh) => mesh.setEnabled(false));
+  public clearScene() {
+    return new Promise<void>((resolve) => {
+      while (this.scene.meshes.length > 0 || this.scene.animationGroups.length > 0) {
+        this.scene.meshes[0]?.dispose();
+        this.scene.animationGroups[0]?.dispose();
+      }
+      resolve();
+    });
   }
 }

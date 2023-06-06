@@ -7,4 +7,7 @@ export default defineConfig({
     alias: [{ find: '@', replacement: resolve(__dirname, 'src') }],
   },
   plugins: [vue()],
+  server: {
+    port: 520,
+  },
 });

@@ -11,10 +11,9 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { SceneService } from '@/scene';
 import { E_Models } from '@/models';
-import { AnimationGroup } from '@babylonjs/core';
 import { AnimationComponent } from './components';
 import { Subscription } from 'rxjs';
 const scene = ref<SceneService | undefined>();
@@ -30,10 +29,10 @@ const [width, height] = [ref<number>(0), ref<number>(0)];
 const [total, loaded, complete] = [ref<number>(0), ref<number>(0), ref<boolean>(false)];
 
 // 动画组
-const animationGroups = ref<Array<AnimationGroup>>();
+const animationGroups = computed(() => scene.value?.scene.animationGroups);
 
 // 加载订阅
-const loadSubScription = ref<Subscription>()
+const loadSubScription = ref<Subscription>();
 
 onMounted(() => {
   const rect = outBox.value?.getBoundingClientRect() ?? { width: 800, height: 800 };
@@ -53,10 +52,8 @@ const initScene = async () => {
     if (props.modelName) {
       await scene.value.importModel(props.modelName);
     }
-    refreshModelConfig();
   }
 };
-
 
 onUnmounted(() => {
   // 卸载时取消订阅
@@ -65,22 +62,14 @@ onUnmounted(() => {
 
 const modelNameWatcher = watch(
   () => props.modelName,
-  async (newModelName) => {
-    await (newModelName && scene.value?.importModel(newModelName));
-    refreshModelConfig();
+  (newModelName) => {
+    newModelName && scene.value?.importModel(newModelName);
   }
 );
 
 onUnmounted(() => {
   modelNameWatcher();
 });
-
-const refreshModelConfig = () => {
-  if (scene.value) {
-    animationGroups.value = scene.value.scene.animationGroups;
-  }
-}
-
 </script>
 
 <style lang="less" scoped>
@@ -104,8 +93,8 @@ const refreshModelConfig = () => {
   .mp-animation {
     position: absolute;
     right: 0;
-    color: greenyellow;
-    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    background-color: rgb(113, 108, 108);
   }
 
   canvas {
