@@ -2,6 +2,10 @@
   <div class="model-preview" ref="outBox">
     <!-- 进度指示条 -->
     <progress v-if="!complete" :max="total" :value="loaded"></progress>
+    <!-- 动画面板 -->
+    <div class="mp-animation" v-if="animationGroups">
+      <AnimationComponent :animation-groups="animationGroups" />
+    </div>
     <canvas ref="babylonRenderCanvas" :width="width" :height="height"></canvas>
   </div>
 </template>
@@ -10,6 +14,9 @@
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { SceneService } from '@/scene';
 import { E_Models } from '@/models';
+import { AnimationGroup } from '@babylonjs/core';
+import { AnimationComponent } from './components';
+import { Subscription } from 'rxjs';
 const scene = ref<SceneService | undefined>();
 const props = defineProps<{ modelName?: E_Models }>();
 
@@ -22,6 +29,12 @@ const [width, height] = [ref<number>(0), ref<number>(0)];
 // 加载进度相关
 const [total, loaded, complete] = [ref<number>(0), ref<number>(0), ref<boolean>(false)];
 
+// 动画组
+const animationGroups = ref<Array<AnimationGroup>>();
+
+// 加载订阅
+const loadSubScription = ref<Subscription>()
+
 onMounted(() => {
   const rect = outBox.value?.getBoundingClientRect() ?? { width: 800, height: 800 };
   [width.value, height.value] = [rect.width, rect.height];
@@ -31,28 +44,43 @@ onMounted(() => {
 const initScene = async () => {
   if (babylonRenderCanvas.value) {
     scene.value = new SceneService(babylonRenderCanvas.value, true);
-    scene.value.importModel$.subscribe((v) => {
+    loadSubScription.value = scene.value.importModel$.subscribe((v) => {
       v.loaded && (loaded.value = v.loaded);
       v.total && (total.value = v.total);
-      v.complete && (complete.value = v.complete);
+      complete.value = v.complete ?? false;
     });
+
     if (props.modelName) {
       await scene.value.importModel(props.modelName);
     }
+    refreshModelConfig();
   }
 };
 
+
+onUnmounted(() => {
+  // 卸载时取消订阅
+  loadSubScription.value?.unsubscribe();
+});
+
 const modelNameWatcher = watch(
   () => props.modelName,
-  (newModelName) => {
-    newModelName && scene.value?.importModel(newModelName);
-    console.log('%c |→_→| 场景 |←_←| ', 'font-size: 18px', scene.value);
+  async (newModelName) => {
+    await (newModelName && scene.value?.importModel(newModelName));
+    refreshModelConfig();
   }
 );
 
 onUnmounted(() => {
   modelNameWatcher();
 });
+
+const refreshModelConfig = () => {
+  if (scene.value) {
+    animationGroups.value = scene.value.scene.animationGroups;
+  }
+}
+
 </script>
 
 <style lang="less" scoped>
@@ -63,13 +91,23 @@ onUnmounted(() => {
   border: 20px solid #1f1f1f;
   border-left: none;
   overflow: hidden;
+
   progress {
     position: absolute;
     width: 80%;
+    height: 50px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
+
+  .mp-animation {
+    position: absolute;
+    right: 0;
+    color: greenyellow;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
   canvas {
     outline: none;
   }

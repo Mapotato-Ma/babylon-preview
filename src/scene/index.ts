@@ -55,7 +55,6 @@ export class SceneService implements I_Scene {
     this.currentViewModelName = modelName;
     // 导入完成
     this.importModel$.next({ complete: true });
-
     // 移动摄像头到最佳位置
     getBestCameraPosition(this.scene);
   }
