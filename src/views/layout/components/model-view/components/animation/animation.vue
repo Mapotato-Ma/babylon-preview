@@ -3,7 +3,7 @@
     <div class="a-item" v-for="(animation, index) in props.animationGroups" :key="animation.name">
       <div class="a-label">{{ `动画${numberToChinese(index + 1)}` }}</div>
       <span class="a-name">{{ animation.name }}</span>
-      <button @click="playOrPause(animation)">{{ animation.isPlaying ? '暂停' : '启动' }}</button>
+      <button @click="playOrPause(animation)">{{ animation.isPlaying ? '⏸' : '▶️' }}</button>
     </div>
     <div class="a-empty" v-if="!props.animationGroups[0]">此模型暂无动画</div>
   </div>
@@ -51,20 +51,22 @@ const numberToChinese = (num: number): string =>
 
   .a-item {
     display: grid;
-    gap: 15px;
     grid-template-columns: 1fr 1fr;
+    gap: 3px;
     align-items: center;
+    background-color: #37373d;
+    border-top: 4px solid #2b79d7;
+    padding: 10px;
     div {
-      color: #ccc;
-      font-size: 14px;
+      color: #2b79d7;
+      font-size: 12px;
+      font-weight: bolder;
       grid-row: 1;
       grid-column: 1;
     }
-    span {
-      font-size: 16px;
-      grid-row: 2;
-    }
+    span,
     button {
+      font-size: 16px;
       grid-row: 2;
     }
   }

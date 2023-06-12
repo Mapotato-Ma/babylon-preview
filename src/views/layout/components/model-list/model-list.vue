@@ -1,7 +1,13 @@
 <template>
   <div class="model-list">
-    <div class="ml-item" :class="{ 'ml-item-selected': currentViewModelName === value }"
-      v-for="{ value, name } in modelListData" :key="value" @click="$emit('model-selected-change', value)">
+    <div
+      class="ml-item"
+      :class="{ 'ml-item-selected': currentViewModelName === value }"
+      :title="name"
+      v-for="{ value, name } in modelListData"
+      :key="value"
+      @click="$emit('model-selected-change', value)"
+    >
       {{ name }}
     </div>
   </div>
@@ -26,8 +32,7 @@ onMounted(() => emits('model-selected-change', modelListData[0].value));
 .model-list {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 10px;
   padding: 20px;
   overflow: auto;
@@ -39,16 +44,13 @@ onMounted(() => emits('model-selected-change', modelListData[0].value));
     place-content: center;
     color: rgba(255, 255, 255, 0.5);
     border: 2px solid;
+    transition: box-shadow 233ms;
 
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.5);
-      border: 2px dashed;
+    &.ml-item-selected {
+      background-color: #37373d;
+      color: #fff;
+      border-color: #2b79d7;
     }
-  }
-
-  .ml-item-selected {
-    background-color: #fff;
-    color: rgba(42, 121, 240, 0.827);
   }
 }
 </style>

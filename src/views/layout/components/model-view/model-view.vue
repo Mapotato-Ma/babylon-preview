@@ -51,6 +51,13 @@ const initScene = async () => {
 
     if (props.modelName) {
       await scene.value.importModel(props.modelName);
+      const ctx = babylonRenderCanvas.value.getContext('2d');
+      const img = new Image();
+      img.src = 'myImage.png';
+      img.onload = function () {
+        ctx?.drawImage(img, 0, 0);
+      };
+      console.log('%c |→_→| img |←_←| ', 'font-size: 18px', img);
     }
   }
 };
@@ -94,7 +101,7 @@ onUnmounted(() => {
     position: absolute;
     right: 0;
     color: #fff;
-    background-color: rgb(113, 108, 108);
+    background-color: rgba(34, 29, 29, 0.161);
   }
 
   canvas {
