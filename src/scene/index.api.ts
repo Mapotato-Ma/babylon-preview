@@ -19,3 +19,10 @@ export interface I_Scene {
 }
 
 export const DEFAULT_MODEL_FILE_PATH = 'models/';
+
+/**
+ * 根据模型名称生成模型加载路径
+ * @param modelName 模型名称
+ * @returns 模型路径
+ */
+export const generateModelFilePathByModelName = (modelName: string) => `models/${modelName}/index.glb`;

@@ -1,7 +1,7 @@
 import { Engine, Scene } from '@babylonjs/core';
 import { createDefaultScene, createEngine, createScene } from '@/creator';
 import { E_Models } from '@/models';
-import { DEFAULT_MODEL_FILE_PATH, I_Scene } from './index.api';
+import { generateModelFilePathByModelName, I_Scene } from './index.api';
 import { Subject } from 'rxjs';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders';
@@ -58,12 +58,18 @@ export class SceneService implements I_Scene {
    * @memberof SceneService
    */
   public async loadModel(modelName: E_Models) {
-    await SceneLoader.ImportMeshAsync('', DEFAULT_MODEL_FILE_PATH, modelName, this.scene, (event) => {
-      this.importModel$.next({
-        loaded: event.loaded,
-        total: event.total,
-      });
-    });
+    await SceneLoader.ImportMeshAsync(
+      '',
+      generateModelFilePathByModelName(modelName),
+      undefined,
+      this.scene,
+      (event) => {
+        this.importModel$.next({
+          loaded: event.loaded,
+          total: event.total,
+        });
+      },
+    );
     // 如果有动画先停止所有动画
     this.scene.animationGroups.forEach((animation) => animation.pause());
   }

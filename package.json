@@ -19,6 +19,10 @@
   },
   "devDependencies": {
     "@babylonjs/materials": "^6.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "eslint": "^8.43.0",
+    "eslint-plugin-vue": "^9.15.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "typescript": "^5.0.4",
     "vite": "^4.3.9",

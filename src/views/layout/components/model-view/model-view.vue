@@ -51,13 +51,6 @@ const initScene = async () => {
 
     if (props.modelName) {
       await scene.value.importModel(props.modelName);
-      const ctx = babylonRenderCanvas.value.getContext('2d');
-      const img = new Image();
-      img.src = 'myImage.png';
-      img.onload = function () {
-        ctx?.drawImage(img, 0, 0);
-      };
-      console.log('%c |→_→| img |←_←| ', 'font-size: 18px', img);
     }
   }
 };
@@ -71,7 +64,7 @@ const modelNameWatcher = watch(
   () => props.modelName,
   (newModelName) => {
     newModelName && scene.value?.importModel(newModelName);
-  }
+  },
 );
 
 onUnmounted(() => {

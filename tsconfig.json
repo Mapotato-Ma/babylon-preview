@@ -16,6 +16,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+    "strictFunctionTypes": true,
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

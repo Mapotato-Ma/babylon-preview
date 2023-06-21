@@ -1,1 +1,1 @@
-export { default as AnimationComponent } from './animation/animation.vue';
+export { default as AnimationComponent } from './model-animation/model-animation.vue';
