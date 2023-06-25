@@ -2,7 +2,7 @@
   <div class="model-list">
     <div
       class="ml-item"
-      :class="{ 'ml-item-selected': currentViewModelName === value }"
+      :class="{ 'ml-item-selected': modelListProps.currentViewModelName === value }"
       :title="name"
       v-for="{ value, name } in modelListData"
       :key="value"
@@ -16,7 +16,7 @@
 <script lang="ts" setup>
 import { E_Models } from '@/models';
 import { onMounted } from 'vue';
-const { currentViewModelName } = defineProps<{
+const modelListProps = defineProps<{
   currentViewModelName?: E_Models;
 }>();
 const emits = defineEmits<{
@@ -36,6 +36,12 @@ onMounted(() => emits('model-selected-change', modelListData[0].value));
   gap: 10px;
   padding: 20px;
   overflow: auto;
+  clip-path: circle(10% at 0 0);
+  transition: clip-path 233ms;
+
+  &:hover{
+    clip-path: circle(200% at 0 0);
+  }
 
   .ml-item {
     cursor: pointer;
