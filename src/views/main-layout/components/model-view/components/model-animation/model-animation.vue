@@ -26,7 +26,6 @@ const playOrPause = (animation: AnimationGroup) => {
   } else {
     animation.play(true);
   }
-  animation && animation.pause();
   proxy?.$forceUpdate();
 };
 

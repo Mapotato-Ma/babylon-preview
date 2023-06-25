@@ -1,12 +1,10 @@
 <template>
   <div class="layout">
-    <div class="l-model-list">
+    <div class="l-model-preview">
       <ModelListComponent
         :current-view-model-name="currentViewModelName"
         @model-selected-change="modelSelectedChange"
       />
-    </div>
-    <div class="l-model-preview">
       <ModelViewComponent :model-name="currentViewModelName" />
     </div>
   </div>
@@ -28,9 +26,6 @@ const modelSelectedChange = (modelName: E_Models) => {
   width: 100%;
   height: 100%;
   background-color: #1f1f1f;
-  .l-model-list {
-    width: 10vw;
-  }
   .l-model-preview {
     flex: auto;
   }

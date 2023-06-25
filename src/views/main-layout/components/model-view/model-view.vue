@@ -77,7 +77,6 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  border: 20px solid #1f1f1f;
   border-left: none;
   overflow: hidden;
 
