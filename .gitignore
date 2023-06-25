@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# 包依赖关系，每个人的node版本不一定一样，网络环境也不一定一样，用同一份文件容易安装不上
+package-lock.json
