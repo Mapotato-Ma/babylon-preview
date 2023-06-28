@@ -32,8 +32,7 @@ export const createHemisphericLight = (scene: Scene) => new HemisphericLight('li
 export const createDefaultScene = (canvas: HTMLCanvasElement) => {
   const engine = createEngine(canvas);
   const scene = createScene(engine);
-  createArcRotateCamera(scene).attachControl(canvas, true);
-  createHemisphericLight(scene).intensity = 0.7;
+  scene.createDefaultCameraOrLight(true, true, true);
   engine.runRenderLoop(() => {
     scene.render();
   });

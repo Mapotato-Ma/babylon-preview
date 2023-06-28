@@ -1,11 +1,22 @@
-import { Engine, Scene } from '@babylonjs/core';
+import {
+  Action,
+  ActionEvent,
+  ActionManager,
+  Engine,
+  ExecuteCodeAction,
+  GizmoManager,
+  PositionGizmo,
+  Quaternion,
+  Scene,
+  TransformNode,
+  UtilityLayerRenderer,
+} from '@babylonjs/core';
 import { createDefaultScene, createEngine, createScene } from '@/creator';
 import { E_Models } from '@/models';
 import { generateModelFilePathByModelName, I_Scene } from './index.api';
 import { Subject } from 'rxjs';
 import { SceneLoader } from '@babylonjs/core';
 import '@babylonjs/loaders';
-import { getBestCameraPosition } from './utils';
 
 /**
  * @description 场景类
@@ -48,7 +59,7 @@ export class SceneService implements I_Scene {
     // 导入完成
     this.importModel$.next({ complete: true });
     // 移动摄像头到最佳位置
-    getBestCameraPosition(this.scene);
+    this.scene.createDefaultCamera(true, true, true);
   }
 
   /**
@@ -70,6 +81,7 @@ export class SceneService implements I_Scene {
         });
       },
     );
+    this.registerControl();
     // 如果有动画先停止所有动画
     this.scene.animationGroups.forEach((animation) => animation.pause());
   }
@@ -87,5 +99,58 @@ export class SceneService implements I_Scene {
       }
       resolve();
     });
+  }
+
+  public registerControl() {
+    const gizmoManager = new GizmoManager(this.scene);
+    // gizmoManager.attachableNodes = [];
+    this.scene.meshes.forEach((mesh) => {
+      // // 创建一个Node对象
+      // const node = new TransformNode(mesh.name + '_node', this.scene);
+
+      // // 将Mesh对象的位置、缩放和旋转信息应用到Node对象中
+      // node.position = mesh.position.clone();
+      // node.scaling = mesh.scaling.clone();
+      // if (mesh.rotationQuaternion) {
+      //   node.rotationQuaternion = mesh.rotationQuaternion.clone();
+      // }
+      // // 将Node对象添加到GizmoManager中
+      // gizmoManager.attachableNodes?.push(node);
+
+      const controller = new TransformNode('controller', this.scene);
+      mesh.parent = controller;
+    });
+
+    this.scene.onPointerDown = function (_, pickResult) {
+      if (pickResult.hit && pickResult.pickedMesh) {
+        // 显示选中mesh的控制器
+        // const controller = pickResult.pickedMesh.parent;
+        // if (controller) {
+        //   controller.isVisible = true;
+        //   // 操纵mesh
+        //   controller.scaling.x += 0.1;
+        // }
+      }
+      gizmoManager.attachToNode(pickResult.pickedMesh!.parent);
+    };
+
+    gizmoManager.positionGizmoEnabled = true;
+    // gizmoManager.rotationGizmoEnabled = true;
+    // gizmoManager.scaleGizmoEnabled = true;
+
+    // const gizmoManager = new GizmoManager(this.scene);
+    // gizmoManager.positionGizmoEnabled = true;
+    // this.scene.onPointerDown = (_, p) => {
+    //   if (p.hit) {
+    //     console.log(p.pickedMesh);
+    //     gizmoManager.attachToMesh(p.pickedMesh);
+    //   }
+    // };
+
+    // const gizmoManager = new GizmoManager(this.scene);
+    // gizmoManager.positionGizmoEnabled = true;
+    // gizmoManager.rotationGizmoEnabled = true;
+    // gizmoManager.scaleGizmoEnabled = true;
+    // gizmoManager.attachableMeshes = [this.scene.meshes[1]];
   }
 }

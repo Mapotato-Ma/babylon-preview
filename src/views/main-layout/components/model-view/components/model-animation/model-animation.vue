@@ -3,7 +3,9 @@
     <div class="a-item" v-for="(animation, index) in props.animationGroups" :key="animation.name">
       <div class="a-label">{{ `动画${numberToChinese(index + 1)}` }}</div>
       <span class="a-name">{{ animation.name }}</span>
-      <button @click="playOrPause(animation)">{{ animation.isPlaying ? '⏸' : '▶️' }}</button>
+      <v-btn color="#283593" @click="playOrPause(animation)">
+        {{ animation.isPlaying ? '暂停' : '启动' }}
+      </v-btn>
     </div>
     <div class="a-empty" v-if="!props.animationGroups[0]">此模型暂无动画</div>
   </div>
@@ -12,7 +14,7 @@
 <script lang="ts" setup>
 import { AnimationGroup } from '@babylonjs/core';
 import { getCurrentInstance, onMounted } from 'vue';
-
+import { VBtn } from 'vuetify/components';
 const props = defineProps<{ animationGroups: Array<AnimationGroup> }>();
 const { proxy } = getCurrentInstance()!;
 
@@ -64,8 +66,7 @@ const numberToChinese = (num: number): string =>
       grid-row: 1;
       grid-column: 1;
     }
-    span,
-    button {
+    span {
       font-size: 16px;
       grid-row: 2;
     }
