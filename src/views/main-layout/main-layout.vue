@@ -1,12 +1,7 @@
 <template>
   <div class="layout">
-    <div class="l-model-preview">
-      <ModelListComponent
-        :current-view-model-name="currentViewModelName"
-        @model-selected-change="modelSelectedChange"
-      />
-      <ModelViewComponent :model-name="currentViewModelName" />
-    </div>
+    <ModelListComponent :current-view-model-name="currentViewModelName" @model-selected-change="modelSelectedChange" />
+    <ModelViewComponent :model-name="currentViewModelName" />
   </div>
 </template>
 
@@ -22,12 +17,7 @@ const modelSelectedChange = (modelName: E_Models) => {
 
 <style lang="less" scoped>
 .layout {
-  display: flex;
   width: 100%;
   height: 100%;
-  background-color: #1f1f1f;
-  .l-model-preview {
-    flex: auto;
-  }
 }
 </style>

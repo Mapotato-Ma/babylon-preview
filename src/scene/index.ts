@@ -1,16 +1,4 @@
-import {
-  Action,
-  ActionEvent,
-  ActionManager,
-  Engine,
-  ExecuteCodeAction,
-  GizmoManager,
-  PositionGizmo,
-  Quaternion,
-  Scene,
-  TransformNode,
-  UtilityLayerRenderer,
-} from '@babylonjs/core';
+import { Engine, GizmoManager, Scene, TransformNode } from '@babylonjs/core';
 import { createDefaultScene, createEngine, createScene } from '@/creator';
 import { E_Models } from '@/models';
 import { generateModelFilePathByModelName, I_Scene } from './index.api';
@@ -81,7 +69,7 @@ export class SceneService implements I_Scene {
         });
       },
     );
-    this.registerControl();
+    // this.registerControl();
     // 如果有动画先停止所有动画
     this.scene.animationGroups.forEach((animation) => animation.pause());
   }
@@ -101,6 +89,12 @@ export class SceneService implements I_Scene {
     });
   }
 
+  /**
+   * @description 为每一个模型零件创建坐标系
+   * @author Mapotato
+   * @date 28/06/2023
+   * @memberof SceneService
+   */
   public registerControl() {
     const gizmoManager = new GizmoManager(this.scene);
     // gizmoManager.attachableNodes = [];
@@ -117,12 +111,19 @@ export class SceneService implements I_Scene {
       // // 将Node对象添加到GizmoManager中
       // gizmoManager.attachableNodes?.push(node);
 
-      const controller = new TransformNode('controller', this.scene);
+      const controller = new TransformNode(mesh.name + '_controller', this.scene);
+      // 将Mesh对象的位置、缩放和旋转信息应用到Node对象中
+      controller.position = mesh.position.clone();
+      controller.scaling = mesh.scaling.clone();
+      if (mesh.rotationQuaternion) {
+        controller.rotationQuaternion = mesh.rotationQuaternion.clone();
+      }
       mesh.parent = controller;
     });
 
     this.scene.onPointerDown = function (_, pickResult) {
       if (pickResult.hit && pickResult.pickedMesh) {
+        console.log('%c |→_→| mesh |←_←| ', 'font-size: 18px', pickResult.pickedMesh);
         // 显示选中mesh的控制器
         // const controller = pickResult.pickedMesh.parent;
         // if (controller) {
@@ -130,8 +131,8 @@ export class SceneService implements I_Scene {
         //   // 操纵mesh
         //   controller.scaling.x += 0.1;
         // }
+        gizmoManager.attachToNode(pickResult.pickedMesh!.parent);
       }
-      gizmoManager.attachToNode(pickResult.pickedMesh!.parent);
     };
 
     gizmoManager.positionGizmoEnabled = true;

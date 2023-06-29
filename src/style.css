@@ -18,12 +18,3 @@ html {
   width: 100%;
   height: 100%;
 }
-
-button {
-  outline: none;
-  cursor: pointer;
-  background-color: transparent;
-  color: #2b79d7;
-  box-shadow: none;
-  border: none;
-}

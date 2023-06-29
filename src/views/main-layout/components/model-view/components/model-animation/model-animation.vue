@@ -14,7 +14,6 @@
 <script lang="ts" setup>
 import { AnimationGroup } from '@babylonjs/core';
 import { getCurrentInstance, onMounted } from 'vue';
-import { VBtn } from 'vuetify/components';
 const props = defineProps<{ animationGroups: Array<AnimationGroup> }>();
 const { proxy } = getCurrentInstance()!;
 
@@ -26,6 +25,7 @@ const playOrPause = (animation: AnimationGroup) => {
   if (animation.isPlaying) {
     animation.pause();
   } else {
+    props.animationGroups.forEach((animation) => animation.isPlaying && animation.pause());
     animation.play(true);
   }
   proxy?.$forceUpdate();

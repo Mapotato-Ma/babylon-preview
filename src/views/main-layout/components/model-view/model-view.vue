@@ -6,7 +6,7 @@
     <div class="mp-animation" v-if="animationGroups">
       <AnimationComponent :animation-groups="animationGroups" />
     </div>
-    <canvas ref="babylonRenderCanvas" :width="width" :height="height"></canvas>
+    <canvas v-resize="onResize" ref="babylonRenderCanvas" :width="width" :height="height"></canvas>
   </div>
 </template>
 
@@ -34,11 +34,16 @@ const animationGroups = computed(() => scene.value?.scene.animationGroups);
 // 加载订阅
 const loadSubScription = ref<Subscription>();
 
-onMounted(() => {
+onMounted(async () => {
+  onResize();
+  await initScene();
+});
+
+const onResize = () => {
   const rect = outBox.value?.getBoundingClientRect() ?? { width: 800, height: 800 };
   [width.value, height.value] = [rect.width, rect.height];
-  initScene();
-});
+  scene.value?.engine.resize();
+};
 
 const initScene = async () => {
   if (babylonRenderCanvas.value) {
