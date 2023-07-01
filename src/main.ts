@@ -2,16 +2,6 @@ import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
 import { router } from './route';
-
-// Vuetify
-import 'vuetify/styles';
-import { createVuetify } from 'vuetify';
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
-
-const vuetify = createVuetify({
-  components,
-  directives,
-});
-
-createApp(App).use(vuetify).use(router).mount('#app');
+import { vuetify } from './vuetify';
+import { grass } from '@/common/directives';
+createApp(App).use(vuetify).use(router).directive('grass', grass).mount('#app');

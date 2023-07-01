@@ -1,13 +1,17 @@
 <template>
   <div class="animation">
-    <div class="a-item" v-for="(animation, index) in props.animationGroups" :key="animation.name">
-      <div class="a-label">{{ `动画${numberToChinese(index + 1)}` }}</div>
-      <span class="a-name">{{ animation.name }}</span>
-      <v-btn color="#283593" @click="playOrPause(animation)">
-        {{ animation.isPlaying ? '暂停' : '启动' }}
+    <div class="a-item text-white" v-grass v-for="animation in props.animationGroups" :key="animation.name">
+      <div class="bg-indigo-accent-2 text-white">
+        {{ animation.name }}
+      </div>
+      <v-btn block class="bg-indigo-accent-2 text-white" rounded="0" elevation="12" @click="playOrPause(animation)">
+        <template v-slot:prepend>
+          <v-icon icon="$pause" v-if="animation.isPlaying" />
+          <v-icon icon="$play" v-else />
+        </template>
+        {{ animation.isPlaying ? '停止动画' : '启动动画' }}
       </v-btn>
     </div>
-    <div class="a-empty" v-if="!props.animationGroups[0]">此模型暂无动画</div>
   </div>
 </template>
 
@@ -30,45 +34,31 @@ const playOrPause = (animation: AnimationGroup) => {
   }
   proxy?.$forceUpdate();
 };
-
-const numberToChinese = (num: number): string =>
-  String(num)
-    .split('')
-    .reverse()
-    .map((digit, index, arr) => {
-      const unit = ['', '十', '百', '千', '万', '亿'][index];
-      const char = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'][Number(digit)];
-      return char === '零' && unit !== '' && arr[index - 1] !== '0' ? char : char + unit;
-    })
-    .reverse()
-    .join('');
 </script>
 
 <style lang="less" scoped>
 .animation {
   display: flex;
   padding: 15px;
-  gap: 15px;
+  gap: 5px;
   flex-direction: column;
 
   .a-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3px;
+    display: flex;
+    gap: 10px;
     align-items: center;
-    background-color: #37373d;
-    border-top: 4px solid #2b79d7;
     padding: 10px;
+    flex-direction: column;
     div {
-      color: #2b79d7;
+      min-width: 5vw;
+      height: 20px;
+      padding: 10px;
+      padding-left: 5px;
       font-size: 12px;
       font-weight: bolder;
-      grid-row: 1;
-      grid-column: 1;
-    }
-    span {
-      font-size: 16px;
-      grid-row: 2;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
     }
   }
 }

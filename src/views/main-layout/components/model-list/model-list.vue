@@ -1,10 +1,12 @@
 <template>
-  <div class="model-list">
+  <div class="model-list" v-grass>
     <v-btn
       :selected="modelListProps.currentViewModelName === value"
       :title="name"
       v-for="{ value, name } in modelListData"
       :key="value"
+      rounded="0"
+      elevation="12"
       @click="$emit('model-selected-change', value)"
       class="bg-indigo-accent-2 text-white"
     >
@@ -33,16 +35,11 @@ onMounted(() => emits('model-selected-change', modelListData[0].value));
   position: absolute;
   top: 1vh;
   left: 1vh;
-  width: 300pt;
+  min-width: 10vw;
   display: grid;
   gap: 10px;
-  padding: 20px;
-  overflow: auto;
+  padding: 10px;
   z-index: 1;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: auto;
-  background-color: rgba(92, 107, 192, 0.4);
-  border-radius: 5px;
-  backdrop-filter: blur(8px);
+  font-weight: bolder;
 }
 </style>

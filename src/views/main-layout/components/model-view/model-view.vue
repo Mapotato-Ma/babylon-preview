@@ -1,7 +1,17 @@
 <template>
   <div class="model-preview" ref="outBox">
     <!-- 进度指示条 -->
-    <progress v-if="!complete" :max="total" :value="loaded"></progress>
+    <v-progress-linear
+      bg-color="indigo-accent-1"
+      color="indigo-accent-2"
+      width="80%"
+      rounded
+      v-model="process"
+      height="25"
+      v-if="!complete"
+    >
+      <strong class="text-white">{{ process }}%</strong>
+    </v-progress-linear>
     <!-- 动画面板 -->
     <div class="mp-animation" v-if="animationGroups">
       <AnimationComponent :animation-groups="animationGroups" />
@@ -17,46 +27,46 @@ import { E_Models } from '@/models';
 import { AnimationComponent } from './components';
 import { Subscription } from 'rxjs';
 const scene = ref<SceneService | undefined>();
-const props = defineProps<{ modelName?: E_Models }>();
-
-const outBox = ref<HTMLElement | undefined>();
-const babylonRenderCanvas = ref<HTMLCanvasElement | undefined>();
-
-// 场景宽高
-const [width, height] = [ref<number>(0), ref<number>(0)];
-
-// 加载进度相关
-const [total, loaded, complete] = [ref<number>(0), ref<number>(0), ref<boolean>(false)];
+const props = defineProps<{ modelName: E_Models }>();
 
 // 动画组
 const animationGroups = computed(() => scene.value?.scene.animationGroups);
 
-// 加载订阅
-const loadSubScription = ref<Subscription>();
-
 onMounted(async () => {
   onResize();
-  await initScene();
 });
 
+// 场景宽高
+const [width, height] = [ref<number>(0), ref<number>(0)];
+const outBox = ref<HTMLElement | undefined>();
 const onResize = () => {
-  const rect = outBox.value?.getBoundingClientRect() ?? { width: 800, height: 800 };
-  [width.value, height.value] = [rect.width, rect.height];
+  const { width: rectWidth, height: rectHeight } = outBox.value?.getBoundingClientRect() ?? { width: 800, height: 800 };
+  [width.value, height.value] = [rectWidth, rectHeight];
   scene.value?.engine.resize();
 };
 
+onMounted(() => {
+  initScene();
+});
+
+const babylonRenderCanvas = ref<HTMLCanvasElement | undefined>();
+// 加载进度相关
+const [total, loaded, complete] = [ref<number>(0), ref<number>(0), ref<boolean>(false)];
+const process = computed(() => Math.ceil((loaded.value / total.value) * 100));
+// 加载订阅
+const loadSubScription = ref<Subscription>();
 const initScene = async () => {
   if (babylonRenderCanvas.value) {
+    // 创建场景实例
     scene.value = new SceneService(babylonRenderCanvas.value, true);
+    // 订阅加载进度
     loadSubScription.value = scene.value.importModel$.subscribe((v) => {
       v.loaded && (loaded.value = v.loaded);
       v.total && (total.value = v.total);
       complete.value = v.complete ?? false;
     });
-
-    if (props.modelName) {
-      await scene.value.importModel(props.modelName);
-    }
+    // 加载初始化模型
+    await scene.value.importModel(props.modelName);
   }
 };
 
@@ -65,10 +75,15 @@ onUnmounted(() => {
   loadSubScription.value?.unsubscribe();
 });
 
+/**
+ * 模型切换加载
+ */
 const modelNameWatcher = watch(
   () => props.modelName,
   (newModelName) => {
-    newModelName && scene.value?.importModel(newModelName);
+    if (newModelName !== scene.value?.currentViewModelName) {
+      newModelName && scene.value?.importModel(newModelName);
+    }
   },
 );
 
@@ -85,11 +100,11 @@ onUnmounted(() => {
   border-left: none;
   overflow: hidden;
 
-  progress {
+  .v-progress-linear {
     position: absolute;
     width: 80%;
     height: 50px;
-    top: 50%;
+    top: 50% !important;
     left: 50%;
     transform: translate(-50%, -50%);
   }
@@ -97,8 +112,6 @@ onUnmounted(() => {
   .mp-animation {
     position: absolute;
     right: 0;
-    color: #fff;
-    background-color: rgba(34, 29, 29, 0.161);
   }
 
   canvas {

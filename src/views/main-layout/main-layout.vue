@@ -9,7 +9,7 @@
 import { E_Models } from '@/models';
 import { ref } from 'vue';
 import { ModelViewComponent, ModelListComponent } from './components';
-const currentViewModelName = ref<E_Models>();
+const currentViewModelName = ref<E_Models>(E_Models.小东京);
 const modelSelectedChange = (modelName: E_Models) => {
   currentViewModelName.value !== modelName && (currentViewModelName.value = modelName);
 };

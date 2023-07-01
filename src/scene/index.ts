@@ -46,8 +46,9 @@ export class SceneService implements I_Scene {
     this.currentViewModelName = modelName;
     // 导入完成
     this.importModel$.next({ complete: true });
-    // 移动摄像头到最佳位置
+    // 重新生成摄像机与环境
     this.scene.createDefaultCamera(true, true, true);
+    this.scene.createDefaultEnvironment();
   }
 
   /**
@@ -57,6 +58,7 @@ export class SceneService implements I_Scene {
    * @memberof SceneService
    */
   public async loadModel(modelName: E_Models) {
+    // 解析并导入glb模型文件
     await SceneLoader.ImportMeshAsync(
       '',
       generateModelFilePathByModelName(modelName),
@@ -79,7 +81,7 @@ export class SceneService implements I_Scene {
    * @date 06/06/2023
    * @memberof SceneService
    */
-  public clearScene() {
+  public async clearScene() {
     return new Promise<void>((resolve) => {
       while (this.scene.meshes.length > 0 || this.scene.animationGroups.length > 0) {
         this.scene.meshes[0]?.dispose();
